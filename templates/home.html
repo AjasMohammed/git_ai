@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ title or "Git Diff Tool" }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- Tailwind CSS CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 min-h-screen grid grid-rows-8">
+        <header class="bg-gray-800 text-white py-4 shadow">
+            <h1 class="text-center text-2xl font-semibold">
+                Git Diff to Commit Message
+            </h1>
+        </header>
+
+        <main
+            class="grid grid-cols-4 w-screen place-items-center p-6 row-span-6 gap-8"
+        >
+            <aside class="flex flex-col gap-4">
+                <div
+                    class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8"
+                >
+                    {% include "partials/add_repo.html" %}
+                </div>
+                <div id="repo-list" class="h-1/2 w-full">
+                    {% include "partials/repo_list.html" %}
+                </div>
+            </aside>
+            <section id="commit-message-container" class="w-full h-full col-span-2 rounded-2xl py-12">
+                {% include "partials/commit_message.html" %}
+            </section>
+            <aside id="model-config" class="flex flex-col gap-4 w-full h-full pt-12">
+            {% include "partials/model_config_card.html" %}
+            </aside>
+        </main>
+
+        <footer class="bg-gray-200 text-center text-gray-600 py-4">
+            &copy; {{ year }} FastAPI App
+        </footer>
+        <div
+            id="toast-container"
+            class="fixed absolute top-4 right-4 z-50 space-y-2"
+        ></div>
+
+        <script src="/static/htmx.min.js"></script>
+        <script>
+            function showToast(message, duration = 3000) {
+                const toastContainer =
+                    document.getElementById("toast-container");
+
+                const toast = document.createElement("div");
+                toast.className =
+                    "bg-white text-black px-4 py-2 rounded shadow-lg transition-opacity duration-300 ease-in-out";
+                toast.textContent = message;
+
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.add("opacity-0");
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
+            }
+            const copyCommitMessage = () => {
+
+            }
+            function copyToClipboard(text) {
+                if (navigator.clipboard) {
+                    navigator.clipboard
+                        .writeText(text)
+                        .then(() => showToast("Copied to clipboard!"))
+                        .catch((error) => {
+                            console.error("Clipboard API error:", error);
+                            // fallbackCopyToClipboard(text);
+                        });
+                } // else {
+                // fallbackCopyToClipboard(text);
+                // }
+            }
+        </script>
+        <script>
+            // Loading spinner
+            document.addEventListener("htmx:beforeRequest", function (evt) {
+                console.log("htmx:send");
+                const button = document.querySelector("#submit-button");
+                button.querySelector(".button-text").classList.add("hidden");
+                button
+                    .querySelector(".button-spinner")
+                    .classList.remove("hidden");
+                button.disabled = true;
+            });
+
+            document.addEventListener("htmx:afterRequest", function (evt) {
+                console.log("htmx:afterRequest");
+                const button = document.querySelector("#submit-button");
+                button.querySelector(".button-text").classList.remove("hidden");
+                button.querySelector(".button-spinner").classList.add("hidden");
+                button.disabled = false;
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,85 @@
+{% if repos %}
+<form
+    hx-post="/generate-commit-message"
+    method="post"
+    hx-target="#commit-message-container"
+    hx-swap="innerHTML"
+    hx-indicator="#loading"
+    class="max-w-md mx-auto h-full bg-white rounded-xl shadow-md p-6 space-y-4 flex flex-col justify-center"
+>
+    <h2 class="text-xl font-bold text-gray-800">Select a Repository</h2>
+
+    <div class="mx-4">
+        {% for repo in repos %}
+        <label class="flex items-center space-x-2">
+            <input
+                type="radio"
+                name="repo_id"
+                value="{{ repo.id }}"
+                class="form-radio text-blue-500"
+                required
+            />
+            <span class="text-gray-700 text-lg font-semibold capitalize"
+                >{{ repo.name }}</span
+            >
+        </label>
+        {% endfor %}
+    </div>
+
+    <button
+        type="submit"
+        id="submit-button"
+        class="bg-blue-500 text-white py-2 px-4 mx-4 rounded hover:bg-blue-600 transition flex items-center justify-center space-x-2"
+    >
+        <!-- Normal text -->
+        <span class="button-text">Generate Commit Message</span>
+
+        <!-- Spinner -->
+        <svg
+            class="button-spinner hidden animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+        >
+            <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+            ></circle>
+            <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+            ></path>
+        </svg>
+    </button>
+</form>
+<div id="loading" class="flex justify-center hidden">
+    <svg
+        class="animate-spin h-6 w-6 text-blue-500"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+        ></circle>
+        <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8H4z"
+        ></path>
+    </svg>
+</div>
+
+{% else %}
+<p>No repositories found.</p>
+{% endif %}

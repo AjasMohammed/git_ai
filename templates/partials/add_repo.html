@@ -1,0 +1,32 @@
+<form method="post" hx-post="/add-repo" hx-target="#repo-list" class="space-y-4">
+    <div class="mb-4 flex flex-col gap-2">
+        <label for="repo_name" class="text-xl font-semibold"
+            >Paste your Repo name</label
+        >
+        <input
+            type="text"
+            name="repo_name"
+            id="repo_name"
+            placeholder="Repository Name"
+            class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+    </div>
+    <div class="mb-4 flex flex-col gap-2">
+        <label for="repo_path" class="text-xl font-semibold"
+            >Paste Absolute path to the Repository</label
+        >
+        <input
+            type="text"
+            name="repo_path"
+            id="repo_path"
+            placeholder="Repository Path"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+    </div>
+    <button
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+    >
+        Add Repository
+    </button>
+</form>

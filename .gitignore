@@ -96,3 +96,7 @@ Desktop.ini
 
 # repositories path
 repos.json
+# database files
+*.db
+# commit message text file
+CM.txt

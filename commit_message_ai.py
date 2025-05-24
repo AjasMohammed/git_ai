@@ -1,4 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain.chat_models import init_chat_model
 from decouple import config
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from google.cloud import firestore
@@ -24,7 +25,8 @@ def init_firestore():
 
 
 def llm_commit_message(diff, chat_db=None):
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", api_key=google_api)
+    # llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", api_key=google_api)
+    llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai", api_key=google_api)
     if chat_db:
         chat_history = FirestoreChatMessageHistory(
             session_id=session_id,

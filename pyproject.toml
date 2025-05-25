@@ -1,0 +1,16 @@
+[project]
+name = "GIT_AI"
+version = "0.1.0"
+description = "This is a project created to automate commite messages using Langchain"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiosqlite>=0.21.0",
+    "fastapi[standard]>=0.115.9",
+    "gitpython>=3.1.44",
+    "jinja2>=3.1.6",
+    "langchain[google-genai]>=0.3.25",
+    "python-decouple>=3.8",
+    "sqlalchemy>=2.0.40",
+    "uvicorn>=0.34.2",
+]

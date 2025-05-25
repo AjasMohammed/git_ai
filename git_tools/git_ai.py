@@ -12,16 +12,15 @@ class GitAI:
             model: str = "gemini-2.0-flash",
             model_provider: str = "google_genai",
             api_key: str | None = None,
-            tools = GitTools()
+            tools=GitTools()
     ):
-        self.repository: Repo = tools.is_git_repo(repo_path)
+        self.repository: Repo | None = tools.is_git_repo(repo_path)
         self.llm = init_chat_model(
             model,
             model_provider=model_provider,
             api_key=api_key
         )
         self.tools = tools
-
 
     def get_initial_prompt(self, task='commit-message') -> list:
         if task == 'commit-message':
@@ -53,7 +52,7 @@ class GitAI:
             """)]
         return
 
-    def invoke(self, task: str) -> BaseMessage:
+    def invoke(self, task: str) -> BaseMessage | None:
         if task == 'commit-message':
             staged_changes = self.tools.get_staged_diff(self.repository)
             prompt_message = self.get_initial_prompt()

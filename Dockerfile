@@ -1,26 +1,18 @@
-FROM python:3.12-slim
+# ---------- Stage 1: Build stage ----------
+FROM python:3.12-slim AS builder
+
 
 # Install dependencies for git and building packages
-# RUN apk add -y --no-cache build-base
-# RUN  apk update && apk add git
+RUN apt-get update \
+    && apt-get clean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /usr/share/man /usr/share/doc
 
-RUN apt-get update && apt-get install -y git
-
-RUN groupadd repos && useradd -ms /bin/bash spongebob
-ENV HOME=/home/spongebob
-
-# Create the /repos directory (if it doesn't exist)
-RUN mkdir -p /repos \
-&& chown -R spongebob:repos /repos
-
-RUN mkdir -p /db \
-&& chown -R spongebob:repos /db
-
+WORKDIR /app
 
 # Install uv globally
 RUN pip install uv
-
-WORKDIR $HOME/app
 
 # Copy project files
 COPY pyproject.toml .
@@ -32,9 +24,37 @@ RUN python -m venv .venv \
     && .venv/bin/pip install uv \
     && .venv/bin/uv sync
 
+# ---------- Stage 2: Final minimal image ----------
+FROM python:3.12-slim
+
+# Install git
+RUN apt-get update && apt-get install -y git \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Create the /repos directory (if it doesn't exist)
+RUN groupadd repos && useradd -ms /bin/bash -g repos spongebob \
+    && mkdir -p /repos /db \
+    && chown -R spongebob:repos /repos /db
+
+ENV HOME=/home/spongebob
+
+# RUN mkdir -p /repos \
+# && chown -R spongebob:repos /repos
+
+# RUN mkdir -p /db \
+# && chown -R spongebob:repos /db
+
+WORKDIR $HOME/app
+# Copy only the venv from builder stage
+COPY --from=builder /app/.venv .venv
+
 COPY . .
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+
+# Clean up python cache
+RUN find .venv -type d -name "__pycache__" -exec rm -r {} + \
+    && find .venv -type f -name "*.pyc" -delete
 
 # Switch to the spongebob user
 USER spongebob

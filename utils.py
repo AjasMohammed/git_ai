@@ -29,9 +29,13 @@ def load_repos(base_path: str) -> None:
         db = SessionLocal()
         repos = filter_repo_directories(dirs, base_path)
         for repo_name, repo_path in repos.items():
-            repo = Repository(name=repo_name, url=repo_path)
-            db.add(repo)
-            db.commit()
-            print(f"Added repo: {repo_name} at {repo_path}")
+            exists = db.query(Repository).filter_by(url=repo_path).first()
+            if not exists:
+                repo = Repository(name=repo_name, url=repo_path)
+                db.add(repo)
+                db.commit()
+                print(f"Added repo: {repo_name} at {repo_path}")
+            else:
+                print(f"Repo already exists: {repo_name} at {repo_path}")
     finally:
         db.close()

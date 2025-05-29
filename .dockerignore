@@ -6,3 +6,6 @@ __pycache__/
 *.log
 *.db
 *.json
+*.md
+.git/
+.gitignore

@@ -1,4 +1,3 @@
-from typing import Union
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -9,31 +8,39 @@ from database import engine, Base, SessionLocal
 from models import Repository
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-# from utils import is_git_repo
 from decouple import config
 from git_tools.git_ai import GitAI
 from git_tools.tools import GitTools
+from utils import load_repos
 
 
-llm_api_key = config("LLM_API_KEY")
+llm_api_key: str = config("LLM_API_KEY", default="")
+in_container: str = config("IN_CONTAINER", default="", cast=bool)
+base_path: str = config("BASE_REPOS_PATH", default="/repos")
 
-app = FastAPI()
-
-app.mount("/static", StaticFiles(directory="templates/static"), name="static")
-templates = Jinja2Templates(directory="templates")
-Base.metadata.create_all(bind=engine)
-
-# @asynccontextmanager
+print("Container: ", in_container)
 
 
 def lifespan(app: FastAPI):
     """
     Lifespan event handler for the FastAPI application.
     """
-    with engine.begin() as conn:
-        conn.run_sync(Base.metadata.create_all)
+    Base.metadata.create_all(bind=engine)
+    if in_container:
+        print("=============================")
+        print("Running in container")
+        print("=============================")
+        print("Loading paths from container")
+        load_repos(base_path)
     yield
-    # Cleanup code can be added here if needed
+    # Cleanup code can be added here if needed.
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+templates = Jinja2Templates(directory="templates")
+Base.metadata.create_all(bind=engine)
 
 
 def get_db():
@@ -66,7 +73,7 @@ def home(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
 
 
 @app.post("/add-repo", response_class=HTMLResponse)
-def add_repo(request: Request, repo_path: str = Form(...), repo_name: str = Form(...), db: Session = Depends(get_db)) -> Union[str, None]:
+def add_repo(request: Request, repo_path: str = Form(...), repo_name: str = Form(...), db: Session = Depends(get_db)) -> HTMLResponse:
     """
     Add a repository to the application.
     """
@@ -83,15 +90,22 @@ def add_repo(request: Request, repo_path: str = Form(...), repo_name: str = Form
 
 
 @app.post("/generate-commit-message", response_class=HTMLResponse)
-def generate_commit_message(request: Request, repo_id: str = Form(...), db: Session = Depends(get_db)) -> Union[str, None]:
+def generate_commit_message(request: Request, repo_id: str = Form(...), db: Session = Depends(get_db)) -> HTMLResponse:
     """
     Generate a commit message for the repository.
     """
-    print(f"Generating commit message for repo: {repo_id}")
-    repo = db.query(Repository).get(repo_id)
-    try:
-        llm = GitAI(repo.url, api_key=llm_api_key)
-        commit_message = llm.invoke(task='commit-message')
-    except NoStagedChangeFound:
-        commit_message = "There are no staged changes in the specified repository."
+    repo: Repository | None = db.get(Repository, repo_id)
+    print(f"Generating commit message for repo: {repo.name}")
+    if repo:
+        try:
+            llm = GitAI(repo, api_key=llm_api_key)
+            print("Invoking LLM")
+            commit_message = llm.invoke(task='commit-message')
+        except NoStagedChangeFound:
+            commit_message = "There are no staged changes in the specified repository."
+        except Exception as e:
+            print(f"Error generating commit message: {e}")
+            commit_message = e
+    else:
+        commit_message = None
     return templates.TemplateResponse("partials/commit_message.html", {"request": request, 'commit_message': commit_message})

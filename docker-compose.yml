@@ -1,30 +1,27 @@
 version: "3.8"
 
-
 services:
-  db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - /etc/git_ai/pgdata:/var/lib/postgresql/data
-    ports:
-      - "${DB_PORT}:5432"
+    db:
+        image: postgres:15
+        restart: always
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+            - /etc/git_ai/pgdata:/var/lib/postgresql/data
+        ports:
+            - "${DB_PORT}:5432"
 
-  app:
-    build: .
-    depends_on:
-      - db
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      LLM_API_KEY: ${LLM_API_KEY}
-    volumes:
-        - /home/ajas/Desktop/git_ai:/repos/git_ai
-        - /home/ajas/Desktop/coursehub:/repos/coursehub
-        - /home/ajas/Desktop/infield:/repos/infield
-        - /home/ajas/Desktop/AI_Blog:/repos/blog
-    ports:
-      - "8888:8888"
+    app:
+        build: .
+        depends_on:
+            - db
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+            LLM_API_KEY: ${LLM_API_KEY}
+        volumes:
+            - /path/to/your/repo1:/repos/repo_name1
+            - /path/to/your/repo:2/repos/repo_name2
+        ports:
+            - "8888:8888"

@@ -24,4 +24,6 @@ print(f'Untracked Files: {repo.untracked_files}')
 # with open("changes.txt", "w") as f:
 #     f.write(staged_diff)
 
-print(repo.git.status())
+# print(repo.git.status())
+diff = repo.git.diff("--staged")
+print((diff))

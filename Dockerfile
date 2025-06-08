@@ -4,6 +4,7 @@ FROM python:3.12-slim AS builder
 
 # Install dependencies for git and building packages
 RUN apt-get update \
+    && apt-get install -y libpq-dev gcc python3-dev \
     && apt-get clean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
@@ -28,7 +29,7 @@ RUN python -m venv .venv \
 FROM python:3.12-slim
 
 # Install git
-RUN apt-get update && apt-get install -y git \
+RUN apt-get update && apt-get install -y git libpq5 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Create the /repos directory (if it doesn't exist)
@@ -37,12 +38,6 @@ RUN groupadd repos && useradd -ms /bin/bash -g repos spongebob \
     && chown -R spongebob:repos /repos /db
 
 ENV HOME=/home/spongebob
-
-# RUN mkdir -p /repos \
-# && chown -R spongebob:repos /repos
-
-# RUN mkdir -p /db \
-# && chown -R spongebob:repos /db
 
 WORKDIR $HOME/app
 # Copy only the venv from builder stage

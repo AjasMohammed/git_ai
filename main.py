@@ -33,7 +33,7 @@ def lifespan(app: FastAPI):
         print("Loading paths from container")
         load_repos(base_path)
     yield
-    # Cleanup code can be added here if needed
+    # Cleanup code can be added here if needed.
 
 
 app = FastAPI(lifespan=lifespan)
@@ -94,14 +94,18 @@ def generate_commit_message(request: Request, repo_id: str = Form(...), db: Sess
     """
     Generate a commit message for the repository.
     """
-    print(f"Generating commit message for repo: {repo_id}")
     repo: Repository | None = db.get(Repository, repo_id)
+    print(f"Generating commit message for repo: {repo.name}")
     if repo:
         try:
-            llm = GitAI(repo.url, api_key=llm_api_key)
+            llm = GitAI(repo, api_key=llm_api_key)
+            print("Invoking LLM")
             commit_message = llm.invoke(task='commit-message')
         except NoStagedChangeFound:
             commit_message = "There are no staged changes in the specified repository."
+        except Exception as e:
+            print(f"Error generating commit message: {e}")
+            commit_message = e
     else:
         commit_message = None
     return templates.TemplateResponse("partials/commit_message.html", {"request": request, 'commit_message': commit_message})

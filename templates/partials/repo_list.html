@@ -7,7 +7,7 @@
     hx-indicator="#loading"
     class="max-w-md mx-auto h-full bg-white rounded-xl shadow-md p-6 space-y-4 flex flex-col justify-center"
 >
-    <h2 class="text-xl font-bold text-gray-800">Select a Repository</h2>
+    <h2 class="text-lg font-bold text-gray-800">Select a Repository</h2>
 
     <div class="mx-4">
         {% for repo in repos %}
@@ -19,11 +19,19 @@
                 class="form-radio text-blue-500"
                 required
             />
-            <span class="text-gray-700 text-lg font-semibold capitalize"
+            <span class="text-gray-700 text-lg font-medium capitalize"
                 >{{ repo.name }}</span
             >
         </label>
         {% endfor %}
+    </div>
+    <div>
+        <textarea
+            name="additional_instruction"
+            id="additional-instruction"
+            placeholder="Additional Instructions to the Model"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ></textarea>
     </div>
 
     <button

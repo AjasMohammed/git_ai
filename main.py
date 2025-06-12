@@ -90,7 +90,7 @@ def add_repo(request: Request, repo_path: str = Form(...), repo_name: str = Form
 
 
 @app.post("/generate-commit-message", response_class=HTMLResponse)
-def generate_commit_message(request: Request, repo_id: str = Form(...), db: Session = Depends(get_db)) -> HTMLResponse:
+def generate_commit_message(request: Request, repo_id: str = Form(...), additional_instruction: str = Form(...), db: Session = Depends(get_db)) -> HTMLResponse:
     """
     Generate a commit message for the repository.
     """
@@ -100,7 +100,7 @@ def generate_commit_message(request: Request, repo_id: str = Form(...), db: Sess
         try:
             llm = GitAI(repo, api_key=llm_api_key)
             print("Invoking LLM")
-            commit_message = llm.invoke(task='commit-message')
+            commit_message = llm.invoke(task='commit-message', additional_instruction=additional_instruction)
         except NoStagedChangeFound:
             commit_message = "There are no staged changes in the specified repository."
         except Exception as e:

@@ -109,3 +109,13 @@ def generate_commit_message(request: Request, repo_id: str = Form(...), addition
     else:
         commit_message = None
     return templates.TemplateResponse("partials/commit_message.html", {"request": request, 'commit_message': commit_message})
+
+
+@app.post("/remove-repo/{repo_id}", response_class=HTMLResponse)
+def remove_repo(request: Request, repo_id: str, db: Session = Depends(get_db)):
+    print(f"Removing repo: {repo_id}")
+    repo: Repository | None = db.get(Repository, repo_id)
+    if repo:
+        db.delete(repo)
+        db.commit()
+    return templates.TemplateResponse("partials/repo_list.html", {"request": request, 'repos': db.query(Repository).all()})

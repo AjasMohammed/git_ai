@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
     db:
+        container_name: git_db
         image: postgres:15
         restart: always
         environment:
@@ -12,8 +13,11 @@ services:
             - /etc/git_ai/pgdata:/var/lib/postgresql/data
         ports:
             - "${DB_PORT}:5432"
+        networks:
+            - git_network
 
     app:
+        container_name: git_app
         build: .
         depends_on:
             - db
@@ -25,3 +29,9 @@ services:
             - /path/to/your/repo:2/repos/repo_name2
         ports:
             - "8888:8888"
+        networks:
+            - git_network
+
+networks:
+    git_network:
+        driver: bridge

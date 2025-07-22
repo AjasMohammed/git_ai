@@ -40,14 +40,19 @@ class GitAI:
                         - <point 1 explaining the main change>
                         - <point 2 (if needed)>
                         - <point 3 (if needed)>
+                        ---
+                        <type>: <summary in past tense>
+                        - <point 1 explaining the main change>
+                        - <point 2 (if needed)>
+                        - <point 3 (if needed)>
 
                         Conventional commit types include: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`.
 
                         Instructions:
                         - Summarize what changed, not how.
+                        - Provide detailed results.
                         - Use past tense (e.g., “added”, “removed”, “updated”).
                         - Be clear and concise.
-                        - Do not mention file names or paths.
                         - Highlight technical terms or code-related phrases using backticks.
 
                         Example:

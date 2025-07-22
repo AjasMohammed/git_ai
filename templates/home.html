@@ -8,41 +8,91 @@
         <!-- Tailwind CSS CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
-    <body class="bg-gray-100 min-h-screen grid grid-rows-8">
-        <header class="bg-gray-800 text-white py-4 shadow">
-            <h1 class="text-center text-2xl font-semibold">
-                Git Diff to Commit Message
+    <body
+        class="bg-gray-100 min-h-screen font-mono mx-8 flex flex-col gap-8"
+        style="
+            background-image: radial-gradient(
+                    circle at 25% 25%,
+                    rgb(0, 0, 0) 1px,
+                    transparent 1px
+                ),
+                radial-gradient(
+                    circle at 75% 75%,
+                    rgb(0, 0, 0) 1px,
+                    transparent 1px
+                );
+            background-size: 20px 20px;
+        "
+    >
+        <header
+            class="py-4 shadow-[8px_8px_0_rgba(0,0,0,0.7)] border-4 rounded-xl border-black px-8 py-6 h-40 flex flex-col gap-4 bg-white mt-4"
+        >
+            <h1
+                class="text-center text-4xl text-black font-bold tracking-wider uppercase border-b-2 border-black px-4 py-2 w-full"
+            >
+                GIT DIFF TOOL
             </h1>
+            <h3 class="font-semibold uppercase tracking-wider flex items-center gap-2">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-terminal w-8 h-8 text-black"
+                    data-lov-id="src/pages/Index.tsx:76:12"
+                    data-lov-name="Terminal"
+                    data-component-path="src/pages/Index.tsx"
+                    data-component-line="76"
+                    data-component-file="Index.tsx"
+                    data-component-name="Terminal"
+                    data-component-content="%7B%22className%22%3A%22w-8%20h-8%20text-black%22%7D"
+                >
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" x2="20" y1="19" y2="19"></line>
+                </svg>
+                <span>Automated Commit Assistant</span>
+            </h3>
         </header>
 
         <main
-            class="grid grid-cols-4 w-screen place-items-center p-6 row-span-6 gap-8"
+            class="grid grid-cols-4 w-full place-items-center row-span-6 gap-8 tracking-wider"
         >
-            <aside class="flex flex-col gap-4">
+            <aside class="flex flex-col gap-4 w-full">
                 <div
-                    class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8"
+                    class="w-full max-w-3xl bg-white rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,0.7)] px-4 py-4 border-2 border-black"
                 >
+                    <h4
+                        class="text-md font-semibold mb-4 border-b border-black py-2 px-4"
+                    >
+                        ADD REPOSITORY
+                    </h4>
                     {% include "partials/add_repo.html" %}
                 </div>
-                <div id="repo-list" class="h-1/2 w-full">
+                <div
+                    id="repo-list"
+                    class="w-full rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,0.7)] px-4 py-4 border-2 border-black bg-white"
+                >
                     {% include "partials/repo_list.html" %}
                 </div>
             </aside>
-            <section id="commit-message-container" class="w-full h-full col-span-2 rounded-2xl py-12">
+            <section
+                id="commit-message-container"
+                class="w-full h-full col-span-3 rounded-2xl shadow-[8px_8px_0_rgba(0,0,0,0.7)] px-4 py-4 border-4 border-black bg-white"
+            >
                 {% include "partials/commit_message.html" %}
             </section>
-            <aside id="model-config" class="flex flex-col gap-4 w-full h-full pt-12">
-            {% include "partials/model_config_card.html" %}
-            </aside>
+            <!-- <aside
+                id="model-config"
+                class="flex flex-col gap-4 w-full h-full pt-12"
+            >
+                {% include "partials/model_config_card.html" %}
+            </aside> -->
         </main>
-
-        <footer class="bg-gray-200 text-center text-gray-600 py-4">
-            &copy; {{ year }} FastAPI App
-        </footer>
-        <div
-            id="toast-container"
-            class="fixed absolute top-4 right-4 z-50 space-y-2"
-        ></div>
 
         <script src="/static/htmx.min.js"></script>
         <script>
@@ -62,9 +112,7 @@
                     setTimeout(() => toast.remove(), 300);
                 }, duration);
             }
-            const copyCommitMessage = () => {
-
-            }
+            const copyCommitMessage = () => {};
             function copyToClipboard(text) {
                 if (navigator.clipboard) {
                     navigator.clipboard

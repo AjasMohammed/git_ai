@@ -1,32 +1,32 @@
-<form method="post" hx-post="/add-repo" hx-target="#repo-list" class="space-y-4">
+<form method="post" hx-post="/add-repo" hx-target="#repo-list" class="space-y-4 w-full text-sm font-semibold">
     <div class="mb-4 flex flex-col gap-2">
-        <label for="repo_name" class="text-lg font-semibold"
-            >Paste your Repo name</label
+        <label for="repo_name"
+            >REPOSITORY NAME:</label
         >
         <input
             type="text"
             name="repo_name"
             id="repo_name"
-            placeholder="Repository Name"
-            class="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="My Repository"
+            class="px-4 py-2 border-2 shadow-[2px_2px_0_rgba(0,0,0,0.3)_inset] border-black focus:outline-none"
         />
     </div>
     <div class="mb-4 flex flex-col gap-2">
-        <label for="repo_path" class="text-lg font-semibold"
-            >Paste Absolute path to the Repository</label
+        <label for="repo_path"
+            >REPOSITORY PATH:</label
         >
         <input
             type="text"
             name="repo_path"
             id="repo_path"
-            placeholder="Repository Path"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="/path/to/repository"
+            class="w-full px-4 py-2 border-2 shadow-[2px_2px_0_rgba(0,0,0,0.3)_inset] border-black focus:outline-none"
         />
     </div>
     <button
         type="submit"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+        class="w-full font-semibold border-2 border-black px-4 py-2 shadow-[4px_4px_0_rgba(0,0,0,0.7)] hover:translate-y-[4px] hover:translate-x-[4px] hover:shadow-none transition-all text-xl"
     >
-        Add Repository
+        ADD REPOSITORY
     </button>
 </form>

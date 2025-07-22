@@ -1,20 +1,53 @@
 <div
-    class="w-full h-full bg-white text-black rounded-2xl p-12 relative shadow-lg"
+    class="w-full h-full text-black rounded-2xl relative p-4 flex flex-col gap-4"
 >
+    <div class="w-full border-b-2 border-black space-y-2 py-2">
+        <h4
+            class="text-4xl w-full text-left font-semibold tracking-wider uppercase"
+        >
+            Commit Message Editor
+        </h4>
+        <p class="text-sm text-gray-500 text-left">
+            Edit and customize your generated commit message
+        </p>
+    </div>
     {% if commit_message %}
-    <pre class="w-full h-full overflow-y-hidden">
-    <textarea id="commit-message" name="" class="w-full h-full outline-none">{{ commit_message }}</textarea></pre>
+    <textarea id="commit-message" name="" class="w-full h-full outline-none overflow-y-auto whitespace-pre-wrap overflow-x-hidden">{{ commit_message }}</textarea>
 
     <!-- Button to copy the text in the textarea to clipboard  -->
     <button
         onclick="copyToClipboard(document.getElementById('commit-message').value)"
-        class="absolute top-4 right-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+        class="absolute top-4 right-4 bg-white text-black text-sm font-semibold border-2 rounded-lg border-black py-2 px-4 hover:scale-110 transition-all"
     >
-        Copy
+        COPY
     </button>
     {% else %}
-    <p class="w-full h-full flex items-center justify-center text-gray-500 text-2xl">
-        Select a Repository to Generate Commit Message
-    </p>
+
+    <div
+        class="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-xl h-full w-full"
+    >
+        <div class="text-center text-gray-500">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-terminal w-16 h-16 mx-auto mb-4 opacity-50"
+            >
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" x2="20" y1="19" y2="19"></line>
+            </svg>
+            <p class="text-lg font-bold uppercase mb-2">No Message Generated</p>
+            <p class="text-sm">
+                Configure your repository settings and click generate to create
+                a commit message
+            </p>
+        </div>
+    </div>
     {% endif %}
 </div>

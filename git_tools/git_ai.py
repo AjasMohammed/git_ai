@@ -40,14 +40,19 @@ class GitAI:
                         - <point 1 explaining the main change>
                         - <point 2 (if needed)>
                         - <point 3 (if needed)>
+                        ---
+                        <type>: <summary in past tense>
+                        - <point 1 explaining the main change>
+                        - <point 2 (if needed)>
+                        - <point 3 (if needed)>
 
                         Conventional commit types include: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`.
 
                         Instructions:
                         - Summarize what changed, not how.
+                        - Provide detailed results.
                         - Use past tense (e.g., “added”, “removed”, “updated”).
                         - Be clear and concise.
-                        - Do not mention file names or paths.
                         - Highlight technical terms or code-related phrases using backticks.
 
                         Example:
@@ -60,12 +65,12 @@ class GitAI:
                         +     return redirect('login')
 
                     """)]
-        return
 
     def save_data(self, diff: str, commit_message: str):
         try:
             with get_db() as db:
-                commit_data = CommitData(git_diff=diff, commit_message=commit_message, repo_id=self.repo_id)
+                commit_data = CommitData(
+                    git_diff=diff, commit_message=commit_message, repo_id=self.repo_id)
                 db.add(commit_data)
                 db.commit()
             return True
@@ -73,11 +78,17 @@ class GitAI:
             print(f"Error saving commit data: {e}")
             return False
 
-    def invoke(self, task: str) -> BaseMessage | None:
+    def invoke(self, task: str, additional_instruction: str = None) -> BaseMessage | None:
         if task == 'commit-message':
             staged_changes = self.tools.get_staged_diff(self.repository)
             prompt_message = self.get_initial_prompt()
             prompt_message.append(HumanMessage(content=staged_changes))
+            if additional_instruction:
+                # includes the user's additional instruction about the changes in the prompt.
+                print("Additional instruction from user about the changes:",
+                      additional_instruction)
+                prompt_message.append(HumanMessage(
+                    content=f"Additional instruction from user on commit message generation:\n{additional_instruction}"))
             response = self.llm.invoke(prompt_message).content
             self.save_data(staged_changes, response)
             return response

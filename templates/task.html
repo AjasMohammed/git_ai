@@ -32,7 +32,7 @@
                 class="text-center text-4xl text-black font-bold tracking-wider uppercase border-b-2 border-black px-4 py-2 w-full font-serif"
                 style="text-shadow: rgb(221, 221, 221) 2px 2px 0px"
             >
-                THE GIT HERALD
+                THE TASK HERALD
             </h1>
             <h3
                 class="font-semibold uppercase tracking-wider flex items-center gap-2"
@@ -52,7 +52,7 @@
                     <polyline points="4 17 10 11 4 5"></polyline>
                     <line x1="12" x2="20" y1="19" y2="19"></line>
                 </svg>
-                <span>Automated Commit Assistant</span>
+                <span>Update Task with AI!</span>
             </h3>
         </header>
 
@@ -60,16 +60,6 @@
             class="grid grid-cols-4 w-full h-full row-span-6 gap-8 tracking-wider"
         >
             <aside class="flex flex-col gap-4 w-full">
-                <!-- <div
-                    class="w-full max-w-3xl bg-white rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,0.7)] px-4 py-4 border-2 border-black"
-                >
-                    <h4
-                        class="text-md font-semibold mb-4 border-b border-black py-2 px-4"
-                    >
-                        ADD REPOSITORY
-                    </h4>
-                    {% include "partials/git/add_repo.html" %}
-                </div> -->
                 <div
                     id="model-config"
                     class="flex flex-col gap-4 w-full justify-center items-center rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,0.7)] px-4 py-4 bg-white"
@@ -77,53 +67,21 @@
                     {% include "partials/model_config_card.html" %}
                 </div>
                 <div
-                    id="repo-list"
-                    class="w-full rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,0.7)] px-4 py-4 border-black bg-white"
+                    id="sheet-config"
+                    class="flex flex-col gap-4 w-full justify-center items-center rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,0.7)] px-4 py-4 bg-white"
                 >
-                    {% include "partials/git/repo_list.html" %}
+
+                    {% include "partials/task/sheet_form.html" %}
                 </div>
             </aside>
             <section
                 id="commit-message-container"
                 class="w-full h-full col-span-3 rounded-2xl shadow-[8px_8px_0_rgba(0,0,0,0.7)] px-4 py-4 border-black bg-white"
-            >
-                {% include "partials/git/commit_message.html" %}
-            </section>
+            ></section>
         </main>
 
         <script src="/static/htmx.min.js"></script>
-        <script>
-            function showToast(message, duration = 3000) {
-                const toastContainer =
-                    document.getElementById("toast-container");
 
-                const toast = document.createElement("div");
-                toast.className =
-                    "bg-white text-black px-4 py-2 rounded shadow-lg transition-opacity duration-300 ease-in-out";
-                toast.textContent = message;
-
-                toastContainer.appendChild(toast);
-
-                setTimeout(() => {
-                    toast.classList.add("opacity-0");
-                    setTimeout(() => toast.remove(), 300);
-                }, duration);
-            }
-            const copyCommitMessage = () => {};
-            function copyToClipboard(text) {
-                if (navigator.clipboard) {
-                    navigator.clipboard
-                        .writeText(text)
-                        .then(() => showToast("Copied to clipboard!"))
-                        .catch((error) => {
-                            console.error("Clipboard API error:", error);
-                            // fallbackCopyToClipboard(text);
-                        });
-                } // else {
-                // fallbackCopyToClipboard(text);
-                // }
-            }
-        </script>
         <script>
             // Loading spinner
             document.addEventListener("htmx:beforeRequest", function (evt) {

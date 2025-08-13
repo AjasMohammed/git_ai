@@ -1,15 +1,19 @@
 {% if repos %}
 <form
-    hx-post="/generate-commit-message"
+    hx-post="{{ url_for('generate_commit_message') }}"
     method="post"
     hx-target="#commit-message-container"
     hx-swap="innerHTML"
     hx-indicator="#loading"
     class="max-w-full h-full space-y-4 flex flex-col justify-center"
 >
-    <h2 class="text-lg font-bold text-black border-b border-black mx-4 px-4 pb-2 tracking-wider">REPOSITORIES</h2>
+    <h2
+        class="text-lg font-bold text-black border-b border-black mx-4 px-4 pb-2 tracking-wider"
+    >
+        REPOSITORIES
+    </h2>
 
-    <div class="mx-4 flex flex-col gap-4 w-fit">
+    <!-- <div class="mx-4 flex flex-col gap-4 w-fit">
         {% for repo in repos %}
         <div id="repo-{{ repo.id }}" class="flex items-center gap-6">
             <button
@@ -38,7 +42,16 @@
             </label>
         </div>
         {% endfor %}
-    </div>
+    </div> -->
+    <select
+        name="repo_id"
+        id="repo_id"
+        class="w-full px-4 py-2 border-2 border-black focus:outline-none shadow-[2px_2px_0_rgba(0,0,0,0.3)_inset] uppercase font-semibold tracking-widest"
+    >
+        {% for repo in repos %}
+        <option value="{{ repo.id }}">{{ repo.name }}</option>
+        {% endfor %}
+    </select>
     <div>
         <textarea
             name="additional_instruction"
@@ -51,7 +64,7 @@
     <button
         type="submit"
         id="submit-button"
-        class="w-full font-semibold border-2 border-black px-4 py-4 shadow-[4px_4px_0_rgba(0,0,0,0.7)] hover:translate-y-[4px] hover:translate-x-[4px] hover:shadow-none transition-all bg-yellow-300 flex items-center justify-center"
+        class="w-full font-semibold border-2 border-black px-4 py-4  hover:-translate-y-[4px] hover:-translate-x-[4px] hover:shadow-[4px_4px_0_rgba(0,0,0,0.7)] transition-all bg-yellow-300 flex items-center justify-center active:translate-y-[4px] active:translate-x-[4px] active:shadow-none"
     >
         <span class="button-text text-xl tracking-wider">GENERATE</span>
         <!-- Spinner -->

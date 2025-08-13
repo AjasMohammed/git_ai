@@ -100,3 +100,6 @@ repos.json
 *.db
 # commit message text file
 CM.txt
+
+# service files
+*_service.json

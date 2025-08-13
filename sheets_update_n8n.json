@@ -1,0 +1,471 @@
+{
+  "name": "Task Tracker",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -304
+      ],
+      "id": "26dbcd95-acdc-4110-8955-01a0ccabbdc2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Please analyze the following commit messages and generate new data matching the sheet's fields: No., Task, Priority, Status, Start date, End date, Notes.\nReturn the result as a JSON array of objects, where each object has the keys: \"No.\", \"Task\", \"Priority\", \"Status\", \"Start date\", \"End date\", and \"Notes\".\nDo not include any explanation or formatting, only the JSON array.\n\nCommit messages:\n{{ $json.commit_messages.join('\\n\\n') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -304
+      ],
+      "id": "3afc5b6b-4d03-4f01-a017-b97b62027db3",
+      "name": "Message a model",
+      "executeOnce": false,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bVJzAYBHQVwI1vMF",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "get the row data from googlesheets and find the last valid row.",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/sheet_id",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "<gid>",
+          "mode": "list",
+          "cachedResultName": "Git_AI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/sheet_id/edit#gid=<gid>"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        1024,
+        -80
+      ],
+      "id": "a79ab53c-29b5-41f3-bf74-ee75322ca29a",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "HHgOLUzXzFCHmgXH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n## GitHub Data Fetching and Parsing\n\n- fetch `pull request` data from the provided **Repository**\n- extract the `commits url` related to the pull request.\n- fetch the `commit message` form the response data.\n- parse the commit messages into an array of strings.\n",
+        "height": 368,
+        "width": 832,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -512
+      ],
+      "typeVersion": 1,
+      "id": "e652b0bb-ddd7-4fec-8f1d-058e726d5f56",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "repository",
+        "operation": "getPullRequests",
+        "owner": {
+          "__rl": true,
+          "value": "owner",
+          "mode": "list",
+          "cachedResultName": "owner",
+          "cachedResultUrl": "https://github.com/owner"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "git_ai",
+          "mode": "list",
+          "cachedResultName": "git_ai",
+          "cachedResultUrl": "https://github.com/owner/git_ai"
+        },
+        "returnAll": true,
+        "getRepositoryPullRequestsFilters": {
+          "state": "open"
+        }
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        32,
+        -304
+      ],
+      "id": "c65c6298-1db2-4e97-9a3f-9a1ae3ebdab8",
+      "name": "Fetch Pull Request Data",
+      "webhookId": "3929f670-1e69-4923-8f74-91eb1f98f894",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "poejdepo",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ddaec17-7b70-4edc-a908-a46f752a9cff",
+              "name": "commits_url",
+              "value": "={{ $json.commits_url }}",
+              "type": "string"
+            },
+            {
+              "id": "1f302788-9762-4641-b8ed-b99e115c2a3f",
+              "name": "pr_url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        -304
+      ],
+      "id": "b753007d-d9b8-4be9-a72a-1a8fb2399f99",
+      "name": "Extract Commit URL",
+      "executeOnce": true,
+      "notes": "Extracts the pullrequest url and the commits url related to the pull request"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.commits_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        -304
+      ],
+      "id": "08519203-2ef8-4c06-9359-ebb873c769a3",
+      "name": "Fetch Commit Message Data",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "LJNDUSjijnKJNJKN",
+          "name": "Bearer Auth account 2"
+        }
+      },
+      "notes": "Request the commit data related to the pull request from the GitHub API."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nvar data = {commit_messages:[]}\nconst inputData = $input.all();\n\nfor (const item of $input.all()) {\n  data.commit_messages.push(item.json.commit.message)\n  console.log(item)\n}\n\nreturn data;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        -304
+      ],
+      "id": "59304f0e-6c39-4eba-a475-a12f9551524f",
+      "name": "Parse Commit Messages"
+    },
+    {
+      "parameters": {
+        "content": "## Generate Task Data from Commit Messages using gemini\n\n### Tools: Google Sheets Read access\n\n- read the last row from the google sheets.\n- generate the task data from commit messages in structured format.\n",
+        "height": 640,
+        "width": 400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        864,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "a0ebd56f-ce2a-4ac8-bf3b-9ad9fc59ea87",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Parse And Append Task Data to Google Sheets\n\n- parse the LLM response using JavaScript.\n- convert the data to json format.\n- append the rows to google sheets.",
+        "height": 384,
+        "width": 384
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1296,
+        -528
+      ],
+      "typeVersion": 1,
+      "id": "68eb410a-49a8-408d-bc74-57a141112fd4",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.all()[0]?.json?.content?.parts?.[0];\nconst text = data?.text ?? '';\nconst jsonString = text.replace(/```json|```/g, '').trim();\nconsole.log(jsonString);\nlet parsed;\ntry {\n  parsed = JSON.parse(jsonString);\n} catch (e) {\n  throw new Error(\"Failed to parse JSON: \" + e.message + \" | Input: \" + jsonString);\n}\n\nif (Array.isArray(parsed)) {\n  return parsed.map(item => ({ json: item }));\n} else if (typeof parsed === \"object\" && parsed !== null) {\n  return [{ json: parsed }];\n} else {\n  throw new Error(\"Parsed JSON is not an array or object: \" + JSON.stringify(parsed));\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        -304
+      ],
+      "id": "52d30992-1f6e-408d-a415-09b3d85072f8",
+      "name": "Parse LLM Response"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/sheet_id/",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "<gid>",
+          "mode": "list",
+          "cachedResultName": "Git_AI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/sheet_id/edit#gid=<gid>"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "No.": "={{ $json[\"No.\"] }}",
+            "Task": "={{ $json.Task }}",
+            "Priority": "={{ $json.Priority }}",
+            "Start date": "=",
+            "Status": "={{ $json.Status }}",
+            "Notes": "={{ $json.Notes }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "No.",
+              "displayName": "No.",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task",
+              "displayName": "Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Start date",
+              "displayName": "Start date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "End date",
+              "displayName": "End date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1552,
+        -304
+      ],
+      "id": "e989680c-d690-4ccb-b84b-a4192a0e2ac3",
+      "name": "Update Google Sheets Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Yw6OdxzvlgCscYpt",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Fetch Pull Request Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parse LLM Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Pull Request Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Commit URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Commit URL": {
+      "main": [
+        [
+          {
+            "node": "Fetch Commit Message Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Commit Message Data": {
+      "main": [
+        [
+          {
+            "node": "Parse Commit Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Commit Messages": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse LLM Response": {
+      "main": [
+        [
+          {
+            "node": "Update Google Sheets Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6cfac5fd-d80c-42f5-9ca5-899fa0c2db48",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dbfc0e37b083c0e4ce1fc39f300b354a9d3554b39226e3108f3241148f60d6a5"
+  },
+  "id": "CYCuLgAqGFfPykjt",
+  "tags": []
+}

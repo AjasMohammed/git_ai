@@ -1,0 +1,95 @@
+<div
+    class="w-full h-full text-black rounded-2xl relative p-4 flex flex-col gap-4"
+>
+    <div class="w-full border-b-2 border-black space-y-2 py-2">
+        <h4
+            class="text-4xl w-full text-left font-serif font-semibold tracking-wider uppercase"
+            style="text-shadow: rgb(221, 221, 221) 2px 2px 0px"
+        >
+            Commit Message Editor
+        </h4>
+        <p class="text-sm text-gray-500 text-left">
+            Edit and customize your generated commit message
+        </p>
+    </div>
+    {% if commit_message %}
+    <input type="hidden" id="repo-id" value="{{ repo_id }}" />
+    <textarea
+        id="commit-message"
+        name=""
+        class="w-full h-full outline-none overflow-y-auto whitespace-pre-wrap overflow-x-hidden"
+    >
+{{ commit_message }}</textarea
+    >
+
+    <!-- Button to copy the text in the textarea to clipboard  -->
+    <button
+        onclick="copyToClipboard(document.getElementById('commit-message').value)"
+        class="absolute top-4 right-4 bg-white text-black text-sm font-semibold border-2 rounded-lg border-black py-2 px-4 shadow-[6px_6px_0_rgba(0,0,0,0.7)] active:translate-y-[4px] active:translate-x-[4px] active:shadow-none transition-all"
+    >
+        COPY
+    </button>
+    <button
+        id="commit-button"
+        class="bg-blue-400 text-black text-3xl font-extrabold border-2 border-black py-6 px-8 hover:shadow-[6px_6px_0_rgba(0,0,0,0.7)] hover:-translate-y-[4px] hover:-translate-x-[4px] active:shadow-none active:translate-y-[4px] active:translate-x-[4px] transition-all tracking-widest flex items-center justify-center"
+    >
+        COMMIT
+    </button>
+
+    {% else %}
+
+    <div
+        class="flex items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-xl h-full w-full"
+    >
+        <div class="text-center text-gray-500">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-terminal w-16 h-16 mx-auto mb-4 opacity-50"
+            >
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" x2="20" y1="19" y2="19"></line>
+            </svg>
+            <p class="text-lg font-bold uppercase mb-2">No Message Generated</p>
+            <p class="text-sm">
+                Configure your repository settings and click generate to create
+                a commit message
+            </p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    if ("{{ commit }}") {
+        const commitMessageTextarea = document.getElementById("commit-message");
+        const commitBtn = document.getElementById("commit-button");
+        commitBtn.addEventListener("click", function () {
+            console.log("Commit button clicked");
+            const commitMessage =
+                document.querySelector("#commit-message").value;
+            const repoId = document.querySelector("#repo-id").value;
+
+            if (!commitMessage.trim()) {
+                showToast("Commit message cannot be empty.");
+                return;
+            }
+
+            htmx.ajax("POST", "{{url_for('commit_changes')}}", {
+                target: "#commit-message-container",
+                swap: "innerHTML",
+                values: {
+                    repo_id: repoId,
+                    commit_message: commitMessage,
+                },
+            });
+        });
+    }
+</script>

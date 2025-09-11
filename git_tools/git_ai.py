@@ -17,7 +17,7 @@ class GitAI:
             tools=GitTools()
     ):
         self.repo_id = repo.id
-        self.repository: Repo | None = tools.is_git_repo(repo.url)
+        self.repository: Repo | None = tools.init_repo(repo.url)
         self.llm = init_chat_model(
             model,
             model_provider=model_provider,

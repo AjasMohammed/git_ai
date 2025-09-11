@@ -10,7 +10,7 @@ def filter_repo_directories(paths: list, base_path: str) -> dict:
     for path in paths:
         full_path = os.path.join(base_path, path)
         dir_name = os.path.basename(full_path).replace("_", " ").title()
-        if os.path.isdir(full_path) and tools.is_git_repo(full_path):
+        if os.path.isdir(full_path) and tools.init_repo(full_path):
             repos[dir_name] = full_path
         else:
             print(f"Skipping {full_path} as it is not a Git repository.")

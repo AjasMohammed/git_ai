@@ -32,3 +32,4 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 app.include_router(home.router)
 app.include_router(git_end.router, prefix="/git", tags=["git"])
+app.include_router(git_end.router, prefix="/tasks", tags=["tasks"])

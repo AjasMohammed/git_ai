@@ -71,7 +71,7 @@ class GitTools:
             Exception: If there is an error committing the changes.
         """
         try:
-            # repo.index.commit(commit_message)
+            repo.index.commit(commit_message)
             print(f"Changes committed to {repo.branches} with message: {commit_message}")
         except Exception as e:
             print(f"Error committing changes: {e}")

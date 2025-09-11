@@ -7,8 +7,13 @@ from models import Repository
 from sqlalchemy.orm import Session
 from git_tools.tools import GitTools
 # from worksheet_tools.sheets import Sheets
+from git_tools.git_ai import GitAI
+from decouple import config
+
 
 router = APIRouter()
+llm_api_key: str = config("LLM_API_KEY", default="")
+
 
 
 @router.post("/add-repo", name="add_repo", response_class=HTMLResponse)
@@ -37,12 +42,12 @@ def generate_commit_message(request: Request, repo_id: str = Form(...), addition
     print(f"Generating commit message for repo: {repo.name}")
     if repo:
         try:
-            # llm = GitAI(repo, api_key=llm_api_key)
-            # print("Invoking LLM")
-            # commit_message = llm.invoke(
-            #     task='commit-message', additional_instruction=additional_instruction)
-            # print(f"Generated commit message: {commit_message}")
-            commit_message = "This is a placeholder commit message."
+            llm = GitAI(repo, api_key=llm_api_key)
+            print("Invoking LLM")
+            commit_message = llm.invoke(
+                task='commit-message', additional_instruction=additional_instruction)
+            print(f"Generated commit message: {commit_message}")
+            # commit_message = "This is a placeholder commit message."
         except NoStagedChangeFound:
             commit_message = "There are no staged changes in the specified repository."
         except Exception as e:
